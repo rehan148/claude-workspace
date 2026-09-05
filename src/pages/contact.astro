@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE, APP_STORE_URL, PLAY_URL } from '../config/site';
+const title = `Contact & Support`;
+const description = `Get help with the ${SITE.name} peptide tracker app. Email support, FAQs and links to manage your subscription on the App Store and Google Play.`;
+---
+<Base title={title} description={description} path="/contact">
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>Contact & support</h1>
+      <p>Email <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>. Include your device model and app version for the fastest answer.</p>
+      <h2>Common requests</h2>
+      <ul>
+        <li><strong>Manage or cancel a subscription:</strong> {APP_STORE_URL && <a href="https://apps.apple.com/account/subscriptions" rel="noopener">Apple subscriptions</a>}{APP_STORE_URL && PLAY_URL && ' · '}{PLAY_URL && <a href="https://play.google.com/store/account/subscriptions" rel="noopener">Google Play subscriptions</a>}</li>
+        <li><strong>Request a compound:</strong> email the name and we will add it to the library.</li>
+        <li><strong>Report a bug:</strong> tell us what you tapped and what you expected.</li>
+        <li><strong>Delete your data:</strong> Settings → Data → Delete everything, or email us for a cloud-side deletion.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import StoreButtons from '../components/StoreButtons.astro';
+import AppSchema from '../components/AppSchema.astro';
+import Faq from '../components/Faq.astro';
+import { SITE } from '../config/site';
+const title = `Download ${SITE.name}: Peptide Tracker for iPhone & Android`;
+const description = `Download the ${SITE.name} peptide tracker app free on the App Store and Google Play. Log doses, calculate reconstitution and track vials, sites and progress.`;
+const faq = [
+  { q: 'What devices are supported?', a: 'iPhone running a current iOS version and Android phones running a current Android version. Tablets are supported in compatibility mode.' },
+  { q: 'Do I need an account?', a: 'No. Start logging immediately. Create an account only if you want encrypted cloud backup across devices.' },
+  { q: 'Can I move my data from a spreadsheet or another tracker?', a: 'Yes. Import a CSV of past doses, or ask the AI assistant to help recreate your protocol from a description.' },
+];
+---
+<Base title={title} description={description} path="/download">
+  <AppSchema />
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Download', href: '/download' }]} /></div>
+  <section class="hero" style="padding-top:32px">
+    <div class="wrap">
+      <h1>Download {SITE.name}</h1>
+      <p class="lead">Free on iPhone and Android. Your first protocol takes about a minute to set up.</p>
+      <StoreButtons />
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap"><h2 style="margin-top:0">Platforms</h2></div>
+    <div class="wrap grid">
+      <div class="card"><h3>iPhone</h3><p>Requires a current iOS version. Widgets and notifications work without opening the app.</p></div>
+      <div class="card"><h3>Android</h3><p>Requires a current Android version. Reliable reminders even with aggressive battery savers.</p></div>
+      <div class="card"><h3>Sync</h3><p>Optional encrypted cloud backup keeps your log identical on every device.</p></div>
+    </div>
+  </section>
+  <Faq items={faq} />
+</Base>

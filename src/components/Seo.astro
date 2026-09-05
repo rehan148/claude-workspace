@@ -1,0 +1,93 @@
+---
+import { SITE, abs, APP_STORE_URL, PLAY_URL } from '../config/site';
+export interface Props {
+  title: string;
+  description: string;
+  /** Path beginning with "/" */
+  path: string;
+  type?: 'website' | 'article';
+  image?: string;
+  noindex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  jsonLd?: Record<string, unknown>[];
+}
+const { title, description, path, type = 'website', image = SITE.ogImage, noindex = false, publishedTime, modifiedTime, jsonLd = [] } = Astro.props;
+const canonical = abs(path === '/' ? '/' : path.replace(/\/$/, ''));
+const imageUrl = abs(image);
+const org = {
+  '@type': 'Organization',
+  '@id': `${SITE.url}/#organization`,
+  name: SITE.legalName,
+  url: SITE.url,
+  logo: { '@type': 'ImageObject', url: abs('/icons/icon-512.png'), width: 512, height: 512 },
+  email: SITE.supportEmail,
+  foundingDate: String(SITE.foundingYear),
+  founder: { '@type': 'Person', name: SITE.founder.name, jobTitle: SITE.founder.role },
+  sameAs: Object.values(SITE.social).filter(Boolean),
+};
+const website = {
+  '@type': 'WebSite',
+  '@id': `${SITE.url}/#website`,
+  url: SITE.url,
+  name: SITE.name,
+  description: SITE.description,
+  publisher: { '@id': `${SITE.url}/#organization` },
+  inLanguage: 'en',
+};
+const webpage = {
+  '@type': type === 'article' ? 'WebPage' : 'WebPage',
+  '@id': `${canonical}#webpage`,
+  url: canonical,
+  name: title,
+  description,
+  isPartOf: { '@id': `${SITE.url}/#website` },
+  about: { '@id': `${SITE.url}/#organization` },
+  primaryImageOfPage: { '@type': 'ImageObject', url: imageUrl },
+  inLanguage: 'en',
+  ...(modifiedTime ? { dateModified: modifiedTime } : {}),
+  ...(publishedTime ? { datePublished: publishedTime } : {}),
+};
+const graph = { '@context': 'https://schema.org', '@graph': [org, website, webpage, ...jsonLd] };
+const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />}
+<meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="alternate" type="application/rss+xml" title={`${SITE.name} guides`} href={abs('/rss.xml')} />
+<link rel="sitemap" type="application/xml" href={abs('/sitemap-index.xml')} />
+{SITE.appStoreId && <meta name="apple-itunes-app" content={`app-id=${SITE.appStoreId}, app-argument=${SITE.appArgumentUrl}`} />}
+{SITE.playPackage && <meta name="google-play-app" content={`app-id=${SITE.playPackage}`} />}
+{APP_STORE_URL && <link rel="alternate" href={`ios-app://${SITE.appStoreId}/https/getpepti.app${path}`} />}
+{PLAY_URL && <link rel="alternate" href={`android-app://${SITE.playPackage}/https/getpepti.app${path}`} />}
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+<meta name="twitter:card" content="summary_large_image" />
+{SITE.twitterHandle && <meta name="twitter:site" content={SITE.twitterHandle} />}
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="apple-mobile-web-app-title" content={SITE.name} />
+<meta name="application-name" content={SITE.name} />
+<meta name="format-detection" content="telephone=no" />
+<script type="application/ld+json" set:html={JSON.stringify(graph)} />

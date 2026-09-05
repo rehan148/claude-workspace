@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.com.example.pepti"],
+        "components": [
+          { "/": "/download", "comment": "Universal link: open the app if installed" },
+          { "/": "/track/*", "comment": "Deep link to a compound" }
+        ]
+      }
+    ]
+  }
+}

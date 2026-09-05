@@ -1,0 +1,36 @@
+---
+/** MobileApplication JSON-LD. Rendered on home, features, pricing, download and track pages. */
+import { SITE, APP_STORE_URL, PLAY_URL, abs } from '../config/site';
+const { name = SITE.productName, description = SITE.description, url = SITE.url, featureList = [] } = Astro.props;
+const offers = [
+  { '@type': 'Offer', name: SITE.pricing.free.name, price: '0', priceCurrency: SITE.pricing.currency, category: 'free' },
+  { '@type': 'Offer', name: `${SITE.pricing.pro.name} monthly`, price: String(SITE.pricing.pro.monthly), priceCurrency: SITE.pricing.currency, category: 'subscription' },
+  { '@type': 'Offer', name: `${SITE.pricing.pro.name} yearly`, price: String(SITE.pricing.pro.yearly), priceCurrency: SITE.pricing.currency, category: 'subscription' },
+];
+const app: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': ['MobileApplication', 'SoftwareApplication'],
+  '@id': `${SITE.url}/#app`,
+  name,
+  alternateName: [SITE.name, `${SITE.name} peptide tracker`],
+  description,
+  url,
+  image: abs('/icons/icon-512.png'),
+  applicationCategory: 'HealthApplication',
+  applicationSubCategory: 'Medication tracker',
+  operatingSystem: SITE.platforms.join(', '),
+  offers,
+  author: { '@id': `${SITE.url}/#organization` },
+  publisher: { '@id': `${SITE.url}/#organization` },
+  installUrl: [APP_STORE_URL, PLAY_URL].filter(Boolean),
+  downloadUrl: [APP_STORE_URL, PLAY_URL].filter(Boolean),
+  sameAs: [APP_STORE_URL, PLAY_URL].filter(Boolean),
+  featureList: featureList.length ? featureList : undefined,
+  isAccessibleForFree: true,
+  inLanguage: 'en',
+};
+if (SITE.rating.count > 0) {
+  app.aggregateRating = { '@type': 'AggregateRating', ratingValue: SITE.rating.value, ratingCount: SITE.rating.count, bestRating: 5, worstRating: 1 };
+}
+---
+<script type="application/ld+json" set:html={JSON.stringify(app)} />

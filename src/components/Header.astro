@@ -1,0 +1,21 @@
+---
+import { SITE } from '../config/site';
+import Logo from './Logo.astro';
+const links = [
+  ['/features', 'Features'],
+  ['/peptide-calculator', 'Calculator'],
+  ['/track', 'Compounds'],
+  ['/compare', 'Compare'],
+  ['/guides', 'Guides'],
+  ['/pricing', 'Pricing'],
+];
+---
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label={`${SITE.name} home`}><Logo />{SITE.name}</a>
+    <nav class="main" aria-label="Primary">
+      <ul>{links.map(([href, label]) => <li><a href={href}>{label}</a></li>)}</ul>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="/download">Get the app</a>
+  </div>
+</header>

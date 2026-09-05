@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Cta from '../components/Cta.astro';
+import { SITE, abs } from '../config/site';
+const title = `About ${SITE.name}: Who Builds the Peptide Tracker and Why`;
+const description = `${SITE.name} was built by ${SITE.founder.name} to replace spreadsheets and notes for tracking peptide protocols. Learn how we build, how we handle data and how to reach us.`;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE.url}/about#founder`,
+  name: SITE.founder.name,
+  jobTitle: SITE.founder.role,
+  description: SITE.founder.bio,
+  worksFor: { '@id': `${SITE.url}/#organization` },
+  url: abs('/about'),
+};
+---
+<Base title={title} description={description} path="/about" jsonLd={[person]}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'About', href: '/about' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>About {SITE.name}</h1>
+      <p class="lead" style="margin-left:0">{SITE.name} exists because tracking a peptide protocol in a spreadsheet is error-prone, and general medication apps do not understand vials, reconstitution or injection-site rotation.</p>
+      <h2>Who builds it</h2>
+      <p><strong>{SITE.founder.name}</strong>, {SITE.founder.role}. {SITE.founder.bio} {SITE.name} is independently built and funded by its subscribers, not by peptide vendors.</p>
+      <h2>How we handle data</h2>
+      <p>Your log lives on your device. Cloud backup is optional and encrypted in transit and at rest. We do not sell data, run ads or share your log with third parties. The AI assistant sends only the question and the minimal protocol context needed to answer it. See the <a href="/privacy">privacy policy</a> for the full detail.</p>
+      <h2>How we write our guides</h2>
+      <p>Guides and compound pages summarise commonly cited reference ranges and published half-life data for organisational purposes. They are reviewed for accuracy when the library is updated and are not a substitute for a clinician. Every page carries a clear disclaimer, and we do not sell or recommend suppliers.</p>
+      <h2>Contact</h2>
+      <p>Email <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a> for support, press or feature requests. We answer every message.</p>
+    </div>
+  </section>
+  <Cta />
+</Base>

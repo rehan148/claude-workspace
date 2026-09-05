@@ -1,0 +1,12 @@
+---
+import { SITE } from '../config/site';
+import StoreButtons from './StoreButtons.astro';
+const { heading = `Start tracking with ${SITE.name} today`, text = 'Free to download. Build your first protocol in under a minute.' } = Astro.props;
+---
+<section class="alt" style="text-align:center">
+  <div class="wrap narrow">
+    <h2 style="margin-top:0">{heading}</h2>
+    <p class="meta">{text}</p>
+    <StoreButtons />
+  </div>
+</section>

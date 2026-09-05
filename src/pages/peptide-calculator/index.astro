@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Calculator from '../../components/Calculator.astro';
+import Faq from '../../components/Faq.astro';
+import Cta from '../../components/Cta.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import { SITE, abs } from '../../config/site';
+import { PEPTIDES, reconstitute } from '../../data/peptides';
+const title = 'Peptide Reconstitution Calculator: mg/mL, mL & Syringe Units';
+const description = 'Free peptide calculator: enter vial mg, bacteriostatic water mL and dose in mcg to get concentration, mL and U-100 syringe units. Presets for 24 compounds.';
+const examples = [
+  [5, 1, 250], [5, 2, 250], [5, 2, 500], [10, 2, 2500], [10, 2, 1000], [2, 1, 100],
+];
+const faq = [
+  { q: 'How does the peptide calculator work?', a: 'Concentration = vial mg ÷ water mL. Dose volume = dose mg ÷ concentration. Units = dose volume × 100 for a U-100 insulin syringe. Doses per vial = vial mcg ÷ dose mcg.' },
+  { q: 'What syringe does this assume?', a: 'A U-100 insulin syringe with 100 units per mL. If you use a U-40 syringe, multiply the units by 0.4.' },
+  { q: 'How much water should I add to a 5 mg vial?', a: '2 mL is the most common choice; it makes a 250 mcg dose exactly 10 units. Use 1 mL if you prefer smaller volumes, or 2.5–3 mL for very small doses.' },
+  { q: 'Can I save calculations?', a: `Yes, in the ${SITE.name} app. Saving a calculation to a protocol sets units per dose and starts vial tracking automatically.` },
+];
+const tool = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Peptide Reconstitution Calculator',
+  url: abs('/peptide-calculator'),
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Any (web)',
+  browserRequirements: 'Requires JavaScript',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@id': `${SITE.url}/#organization` },
+};
+---
+<Base title={title} description={description} path="/peptide-calculator" image="/og/peptide-calculator.png" jsonLd={[tool]}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Peptide calculator', href: '/peptide-calculator' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap">
+      <h1>Peptide reconstitution calculator</h1>
+      <p class="lead" style="margin-left:0">Enter your vial strength, the water you add and the dose you want. Get concentration, millilitres, U-100 syringe units and doses per vial instantly. Free, no sign-up.</p>
+      <Calculator />
+    </div>
+  </section>
+  <section class="alt">
+    <div class="wrap">
+      <h2 style="margin-top:0">Common reconstitution examples</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Vial</th><th>Water</th><th>Dose</th><th>Concentration</th><th>Draw</th><th>Units</th><th>Doses/vial</th></tr></thead>
+        <tbody>{examples.map(([mg, ml, mcg]) => { const r = reconstitute(mg, ml, mcg); return (
+          <tr><td>{mg} mg</td><td>{ml} mL</td><td>{mcg >= 1000 ? `${mcg / 1000} mg` : `${mcg} mcg`}</td><td>{r.concentrationMgPerMl} mg/mL</td><td>{r.doseMl.toFixed(2)} mL</td><td><strong>{r.units.toFixed(1)}</strong></td><td>{r.dosesPerVial}</td></tr>
+        ); })}</tbody>
+      </table></div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <h2 style="margin-top:0">Calculators by compound</h2>
+      <p class="meta">Each page pre-fills typical vial sizes and doses and explains the schedule.</p>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+        {PEPTIDES.map((p) => <a class="card" href={`/peptide-calculator/${p.slug}`} style="text-decoration:none;padding:14px 16px"><strong>{p.name} calculator</strong></a>)}
+      </div>
+    </div>
+  </section>
+  <section class="alt">
+    <div class="wrap prose">
+      <h2 style="margin-top:0">How to use the result</h2>
+      <ol>
+        <li>Write the concentration and date on the vial.</li>
+        <li>Draw the shown units on a U-100 insulin syringe.</li>
+        <li>Log the dose in <strong>mcg</strong>, not units, so a future vial with different water volume does not change your dose.</li>
+        <li>Track doses remaining so you reorder a week early.</li>
+      </ol>
+      <p>Full walkthrough: <a href="/guides/how-to-reconstitute-peptides">How to reconstitute peptides</a>.</p>
+      <Disclaimer />
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta heading={`Save calculations to a protocol in ${SITE.name}`} text="The app remembers each vial’s concentration, counts doses down and reminds you to reorder." />
+</Base>

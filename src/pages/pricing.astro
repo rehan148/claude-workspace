@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import AppSchema from '../components/AppSchema.astro';
+import { SITE } from '../config/site';
+const { free, pro } = SITE.pricing;
+const title = `${SITE.name} Pricing: Free Peptide Tracker, ${pro.name} from $${pro.yearly}/year`;
+const description = `${SITE.name} is free to download. ${pro.name} adds unlimited protocols, unlimited AI, bloodwork tracking and export for $${pro.monthly}/month or $${pro.yearly}/year.`;
+const faq = [
+  { q: 'What is included for free?', a: free.features.join('; ') + '.' },
+  { q: `How much is ${SITE.name} ${pro.name}?`, a: `$${pro.monthly} per month or $${pro.yearly} per year (about $${(pro.yearly / 12).toFixed(2)} per month). Cancel any time in your App Store or Google Play subscriptions.` },
+  { q: 'Is there a free trial?', a: 'The free plan has no time limit. You can use it indefinitely and upgrade only if you need more protocols or features.' },
+  { q: 'Can I cancel?', a: 'Yes. Subscriptions are managed by Apple or Google and can be cancelled at any time; you keep access until the end of the billing period.' },
+];
+---
+<Base title={title} description={description} path="/pricing">
+  <AppSchema />
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Pricing', href: '/pricing' }]} /></div>
+  <section class="hero" style="padding-top:32px">
+    <div class="wrap">
+      <h1>Simple pricing</h1>
+      <p class="lead">Start free. Upgrade when you run more than one protocol or want labs, photos and export.</p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap" style="max-width:860px"><h2 style="margin-top:0">Plans</h2></div>
+    <div class="wrap grid" style="max-width:860px">
+      <div class="card">
+        <h3>{free.name}</h3>
+        <p class="stat">$0</p>
+        <ul style="padding-left:1.1em;color:var(--muted)">{free.features.map((f) => <li>{f}</li>)}</ul>
+        <a class="btn btn-outline" href="/download">Download free</a>
+      </div>
+      <div class="card" style="border-color:var(--brand)">
+        <h3>{pro.name}</h3>
+        <p class="stat">${pro.monthly}<span class="meta" style="font-size:1rem;font-weight:500">/month</span></p>
+        <p class="meta">or ${pro.yearly}/year (save {Math.round((1 - pro.yearly / (pro.monthly * 12)) * 100)}%)</p>
+        <ul style="padding-left:1.1em;color:var(--muted)">{pro.features.map((f) => <li>{f}</li>)}</ul>
+        <a class="btn btn-primary" href="/download">Get {pro.name}</a>
+      </div>
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta />
+</Base>

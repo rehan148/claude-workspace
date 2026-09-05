@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../config/site';
+const title = 'Privacy Policy';
+const description = `How the ${SITE.name} peptide tracker app collects, stores and protects your data. On-device by default, optional encrypted backup, no ads, no data selling.`;
+const updated = '2026-09-05';
+---
+<Base title={title} description={description} path="/privacy" modifiedTime={updated}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>Privacy policy</h1>
+      <p class="meta">Last updated {updated}</p>
+      <h2>Summary</h2>
+      <ul>
+        <li>Your dose log, protocols, photos and notes are stored on your device by default.</li>
+        <li>Cloud backup is optional, requires sign-in, and is encrypted in transit and at rest.</li>
+        <li>We do not sell personal data, show ads or share your health data with advertisers.</li>
+        <li>The AI assistant sends your question plus minimal protocol context to an AI provider to generate an answer; it is not used to train models.</li>
+        <li>You can export or delete all of your data at any time from Settings.</li>
+      </ul>
+      <h2>Data we collect</h2>
+      <p><strong>Health data you enter:</strong> compounds, doses, injection sites, vials, check-ins, measurements, photos and lab values. Stored locally; backed up only if you enable it.</p>
+      <p><strong>Account data (optional):</strong> email address or sign-in provider identifier, used for backup and subscription restore.</p>
+      <p><strong>Diagnostics:</strong> anonymous crash reports and aggregate usage events (for example “protocol created”) with no health values attached.</p>
+      <h2>How we use it</h2>
+      <p>To run the app, sync your backup, answer support requests and improve reliability. Nothing else.</p>
+      <h2>Third parties</h2>
+      <p>Apple and Google process payments. Our cloud provider hosts encrypted backups. The AI provider processes assistant queries. None receive your full log.</p>
+      <h2>Your rights</h2>
+      <p>Export, correct or delete your data from Settings → Data, or email <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>. Users in the EU/UK, California and other jurisdictions have additional rights we honour on request.</p>
+      <h2>Children</h2>
+      <p>{SITE.name} is not intended for anyone under 18.</p>
+      <h2>Changes</h2>
+      <p>We will update this page and the in-app notice when the policy changes.</p>
+    </div>
+  </section>
+</Base>

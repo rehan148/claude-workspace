@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import StoreButtons from '../components/StoreButtons.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import AppSchema from '../components/AppSchema.astro';
+import { SITE } from '../config/site';
+import { PEPTIDES, reconstitute } from '../data/peptides';
+const title = `${SITE.name}: Peptide Tracker App for iPhone & Android`;
+const description = `Free peptide tracker app for iPhone and Android. Log doses, schedule protocols, rotate injection sites, calculate reconstitution and track vials, labs and progress.`;
+const features = [
+  ['📅', 'Protocol scheduling', 'Daily, weekly, every-other-day, 5-on/2-off or custom weekdays. Phases switch reminders automatically.'],
+  ['🧮', 'Reconstitution calculator', 'Vial mg + water mL + target dose → mg/mL, mL and U-100 syringe units. Saved to your protocol.'],
+  ['💉', 'Injection-site rotation', 'A body map that suggests the next site and shows which areas need rest.'],
+  ['📦', 'Vial inventory', 'Doses remaining per vial, reconstitution dates and reorder reminders.'],
+  ['📈', 'Half-life level curves', 'See how each compound builds and fades from your logged doses.'],
+  ['🩸', 'Bloodwork & progress', 'Labs, weight, measurements, photos and daily check-ins next to every dose.'],
+  ['🤖', 'AI assistant', `Ask about any of the ${SITE.compoundCount}+ compounds in the library, reconstitution maths or your own schedule.`],
+  ['🔒', 'Private by design', 'Your data stays on your device unless you turn on encrypted cloud backup.'],
+];
+const featureList = features.map((f) => f[1]);
+const example = reconstitute(5, 2, 250);
+const compare = [
+  ['Research peptides + GLP-1s + TRT in one app', true, true, false, true],
+  ['Reconstitution calculator', true, true, false, true],
+  ['Injection-site rotation map', true, true, true, true],
+  ['Phase-based protocols (loading → maintenance)', true, false, false, false],
+  ['Half-life level curves', true, true, false, true],
+  ['Bloodwork tracking', true, true, false, true],
+  ['AI assistant', true, true, false, false],
+  ['Free tier covers a full protocol', true, true, true, false],
+  ['iPhone and Android', true, true, true, true],
+];
+const faq = [
+  { q: 'What is a peptide tracker app?', a: 'A peptide tracker is an app that records every dose you take, when you took it, where you injected, and how much is left in each vial. Good trackers also calculate reconstitution, remind you when a dose is due, and chart weight, bloodwork and side effects against your protocol.' },
+  { q: `Is ${SITE.name} free?`, a: `Yes. The free plan includes the full compound library, the reconstitution calculator, one active protocol with reminders, dose logging, vial inventory and injection-site rotation. ${SITE.pricing.pro.name} adds unlimited protocols, unlimited AI, bloodwork tracking, photos and export for $${SITE.pricing.pro.monthly}/month or $${SITE.pricing.pro.yearly}/year.` },
+  { q: 'Which peptides can I track?', a: `Any. ${SITE.name} ships with ${SITE.compoundCount}+ compounds including semaglutide, tirzepatide, retatrutide, BPC-157, TB-500, ipamorelin, CJC-1295, GHK-Cu, tesamorelin, NAD+, glutathione and TRT, each with a half-life and typical vial sizes. You can also add your own.` },
+  { q: 'Does it work with Ozempic, Wegovy, Mounjaro and Zepbound?', a: 'Yes. Log branded pens by mg or clicks, or compounded vials by mg and mL. Weekly reminders, titration steps and level curves work the same way.' },
+  { q: 'Is my data private?', a: `${SITE.name} stores your log on your device. Cloud backup is optional and encrypted. We never sell data and there are no ads.` },
+  { q: 'Is there an Android version?', a: `Yes. ${SITE.name} is available on the App Store and Google Play with the same features.` },
+];
+---
+<Base title={title} description={description} path="/">
+  <AppSchema featureList={featureList} />
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Peptide tracker app · iPhone & Android</span>
+      <h1>The peptide tracker that keeps your protocol on schedule</h1>
+      <p class="lead">{SITE.name} logs every dose, calculates reconstitution, rotates injection sites and tracks vials, bloodwork and progress for {SITE.compoundCount}+ peptides, GLP-1s and TRT. Free to start.</p>
+      <StoreButtons />
+      <p class="meta" style="margin-top:14px">No ads · No data selling · Works offline</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 style="margin-top:0;text-align:center">Everything a peptide tracker should do</h2>
+      <div class="grid">
+        {features.map(([icon, h, p]) => (
+          <div class="card"><div class="icon">{icon}</div><h3>{h}</h3><p>{p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap two">
+      <div>
+        <h2 style="margin-top:0">Reconstitution maths, done for you</h2>
+        <p>Enter the vial strength, the bacteriostatic water you added and the dose you want. {SITE.name} returns concentration, millilitres and syringe units, then decrements the vial every time you log.</p>
+        <p class="meta">Example: 5 mg vial + 2 mL water, 250 mcg dose → {example.concentrationMgPerMl} mg/mL, {example.doseMl.toFixed(2)} mL, <strong>{example.units} units</strong>, {example.dosesPerVial} doses per vial.</p>
+        <a class="btn btn-primary" href="/peptide-calculator">Open the free calculator</a>
+      </div>
+      <div class="phone" aria-hidden="true">5 mg · 2 mL · 250 mcg<br/>= 10 units</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 style="margin-top:0">Track any compound</h2>
+      <p class="meta">Dedicated tracking guides, half-life data and calculator presets for the most-used peptides.</p>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        {PEPTIDES.slice(0, 12).map((p) => (
+          <a class="card" href={`/track/${p.slug}`} style="text-decoration:none"><h3 style="font-size:1.05rem">{p.name}</h3><p style="font-size:.85rem">{p.frequency}</p></a>
+        ))}
+      </div>
+      <p style="margin-top:16px"><a href="/track">See all {PEPTIDES.length} compound guides →</a></p>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2 style="margin-top:0">How {SITE.name} compares</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Feature</th><th>{SITE.name}</th><th>PeptIQ</th><th>Shotsy</th><th>Regimen</th></tr></thead>
+          <tbody>
+            {compare.map(([label, ...cols]) => (
+              <tr><td>{label}</td>{cols.map((c) => <td class={c ? 'yes' : 'no'}>{c ? '✓' : '—'}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="meta" style="margin-top:12px">Based on public listings, September 2026. <a href="/best-peptide-tracker-apps">Read the full comparison →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 style="margin-top:0">Set up in three steps</h2>
+      <div class="grid">
+        <div class="card"><h3>1. Add your compounds</h3><p>Pick from the library or create your own. Half-life, vial size and typical schedule are pre-filled.</p></div>
+        <div class="card"><h3>2. Build the protocol</h3><p>Choose frequency, dose and phases. {SITE.name} calculates units and schedules reminders.</p></div>
+        <div class="card"><h3>3. Log with one tap</h3><p>Each dose updates inventory, rotation, level curves and your progress charts.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <Faq items={faq} />
+  <Cta />
+</Base>

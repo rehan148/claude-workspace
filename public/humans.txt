@@ -1,0 +1,5 @@
+/* TEAM */
+Founder & Developer: Rehan
+Site: https://getpepti.app
+/* SITE */
+Stack: Astro (static), no client framework, system fonts, zero third-party requests.

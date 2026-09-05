@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config/site';
+---
+<Base title="Page not found" description={`That page does not exist on ${SITE.name}. Try the home page, the peptide calculator or the compound library.`} path="/404" noindex={true}>
+  <section class="hero">
+    <div class="wrap">
+      <h1>Page not found</h1>
+      <p class="lead">Try the <a href="/">home page</a>, the <a href="/peptide-calculator">calculator</a> or the <a href="/track">compound library</a>.</p>
+    </div>
+  </section>
+</Base>

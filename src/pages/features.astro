@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import AppSchema from '../components/AppSchema.astro';
+import { SITE } from '../config/site';
+const title = `${SITE.name} Features: Peptide Tracker, Calculator, Rotation & Inventory`;
+const description = `Every ${SITE.name} feature: protocol scheduling, reconstitution calculator, injection-site rotation, vial inventory, half-life curves, bloodwork, AI assistant and export.`;
+const groups = [
+  { h: 'Protocols & reminders', items: [
+    'Daily, weekly, every-other-day, 5-on/2-off and custom weekday schedules',
+    'Phases (loading → maintenance) that switch dose and frequency on a date',
+    'Titration plans for GLP-1s with automatic step-up reminders',
+    'Multi-compound stacks logged with one tap',
+    'Reliable notifications, even with the app closed',
+    'Adherence stats, streaks and missed-dose history',
+  ]},
+  { h: 'Calculator & dosing', items: [
+    'Reconstitution calculator: vial mg + water mL + dose → mg/mL, mL and U-100 units',
+    'mcg, mg and IU support (HGH, NAD+, glutathione, TRT oils)',
+    'Per-compound presets for typical vial sizes',
+    'Results saved directly to the protocol',
+  ]},
+  { h: 'Inventory & rotation', items: [
+    'Doses remaining per vial and reorder reminders',
+    'Reconstitution and expiry dates per vial',
+    'Body-map injection-site rotation with suggested next site',
+    'Site history so sensitive areas get rest',
+  ]},
+  { h: 'Insights & progress', items: [
+    'Estimated level curves from each compound’s half-life',
+    'Weight, measurements and progress photos',
+    'Daily check-ins: sleep, energy, mood, appetite, side effects',
+    'Bloodwork markers charted against dose history',
+    'CSV and PDF export for your clinician',
+  ]},
+  { h: 'AI & library', items: [
+    `${SITE.compoundCount}+ compound library with half-lives, routes and typical schedules`,
+    'AI assistant that answers questions about compounds, reconstitution and your own schedule',
+    'Research summaries and references per compound',
+  ]},
+  { h: 'Privacy & platform', items: [
+    'On-device storage; optional encrypted cloud backup',
+    'No ads, no data selling, no account required to start',
+    'iPhone and Android with feature parity',
+  ]},
+];
+const faq = [
+  { q: 'Can I track more than one protocol?', a: `The free plan includes one active protocol. ${SITE.pricing.pro.name} unlocks unlimited protocols and stacks.` },
+  { q: 'Does the calculator handle IU and mg doses?', a: 'Yes. Enter vials in mg or IU and doses in mcg, mg or IU; the app converts and shows syringe units.' },
+  { q: 'Can I export my data?', a: `${SITE.pricing.pro.name} includes CSV and PDF export, useful for sharing with a clinician.` },
+];
+---
+<Base title={title} description={description} path="/features">
+  <AppSchema featureList={groups.flatMap((g) => g.items)} />
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Features', href: '/features' }]} /></div>
+  <section class="hero" style="padding-top:32px">
+    <div class="wrap">
+      <h1>Peptide tracker features</h1>
+      <p class="lead">{SITE.name} replaces the spreadsheet, the notes app and the calculator tab with one log that understands peptides.</p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap"><h2 style="margin-top:0">Everything included</h2></div>
+    <div class="wrap grid">
+      {groups.map((g) => (
+        <div class="card"><h3>{g.h}</h3><ul style="padding-left:1.1em;margin:0;color:var(--muted)">{g.items.map((i) => <li>{i}</li>)}</ul></div>
+      ))}
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta />
+</Base>

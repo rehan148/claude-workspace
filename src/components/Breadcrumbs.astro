@@ -1,0 +1,14 @@
+---
+import { abs } from '../config/site';
+export interface Props { items: { name: string; href: string }[] }
+const { items } = Astro.props;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: abs(it.href) })),
+};
+---
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>{items.map((it, i) => <li>{i < items.length - 1 ? <a href={it.href}>{it.name}</a> : <span aria-current="page">{it.name}</span>}</li>)}</ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

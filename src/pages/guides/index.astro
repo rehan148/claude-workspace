@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Cta from '../../components/Cta.astro';
+import { getCollection } from 'astro:content';
+const guides = (await getCollection('guides')).sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const title = 'Peptide Tracking Guides: Protocols, Reconstitution & Cycles';
+const description = 'Practical guides on tracking peptide protocols: reconstitution maths, injection site rotation, half-life curves, GLP-1 titration, cycles, stacks and storage.';
+---
+<Base title={title} description={description} path="/guides">
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap">
+      <h1>Peptide tracking guides</h1>
+      <p class="lead" style="margin-left:0">Short, practical and free. Written to answer the questions people ask before and after they start a protocol.</p>
+      <h2>All guides</h2>
+      <div class="grid">
+        {guides.map((g) => (
+          <a class="card" href={`/guides/${g.id}`} style="text-decoration:none">
+            <h3 style="font-size:1.1rem">{g.data.title}</h3>
+            <p>{g.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Cta />
+</Base>

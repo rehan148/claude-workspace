@@ -1,0 +1,60 @@
+---
+import { SITE, APP_STORE_URL, PLAY_URL } from '../config/site';
+import { PEPTIDES } from '../data/peptides';
+import { COMPETITORS } from '../data/competitors';
+const top = PEPTIDES.slice(0, 8);
+const year = new Date().getFullYear();
+---
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h3>{SITE.name}</h3>
+        <ul>
+          <li><a href="/features">Features</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="/download">Download</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact & support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tools</h3>
+        <ul>
+          <li><a href="/peptide-calculator">Peptide reconstitution calculator</a></li>
+          <li><a href="/peptide-calculator/bpc-157">BPC-157 calculator</a></li>
+          <li><a href="/peptide-calculator/semaglutide">Semaglutide calculator</a></li>
+          <li><a href="/peptide-calculator/tirzepatide">Tirzepatide calculator</a></li>
+          <li><a href="/track">All compounds</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Track</h3>
+        <ul>{top.map((p) => <li><a href={`/track/${p.slug}`}>{p.name} tracker</a></li>)}</ul>
+      </div>
+      <div>
+        <h3>Compare</h3>
+        <ul>
+          <li><a href="/best-peptide-tracker-apps">Best peptide tracker apps</a></li>
+          {COMPETITORS.slice(0, 5).map((c) => <li><a href={`/compare/${SITE.name.toLowerCase()}-vs-${c.slug}`}>{SITE.name} vs {c.name.split(' (')[0]}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <h3>Learn</h3>
+        <ul>
+          <li><a href="/guides">All guides</a></li>
+          <li><a href="/guides/how-to-track-your-peptide-protocol">How to track a protocol</a></li>
+          <li><a href="/guides/how-to-reconstitute-peptides">How to reconstitute peptides</a></li>
+          <li><a href="/guides/injection-site-rotation">Injection site rotation</a></li>
+          <li><a href="/guides/peptide-half-life-explained">Peptide half-life explained</a></li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:28px">
+      © {year} {SITE.legalName}. <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+      {APP_STORE_URL && <> · <a href={APP_STORE_URL} rel="noopener">App Store</a></>}
+      {PLAY_URL && <> · <a href={PLAY_URL} rel="noopener">Google Play</a></>}
+    </p>
+    <p class="disclaimer">{SITE.name} is a tracking and organisation tool. Nothing on this site is medical advice. Peptides other than approved medicines are research compounds; consult a licensed healthcare provider before starting, stopping or changing any protocol.</p>
+  </div>
+</footer>

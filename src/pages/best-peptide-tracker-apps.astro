@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import { SITE, abs } from '../config/site';
+import { COMPETITORS } from '../data/competitors';
+const title = 'Best Peptide Tracker Apps in 2026 (7 Compared, Free & Paid)';
+const description = 'The best peptide tracker apps for iPhone and Android in 2026, compared on compounds, calculator, rotation, inventory, level curves, AI and price. Free and paid.';
+const published = '2026-09-05';
+const criteria = [
+  ['Compound coverage', 'Does it handle research peptides, GLP-1s and TRT, or only one category?'],
+  ['Reconstitution calculator', 'Is the maths built in and saved to the vial, or do you need a separate tab?'],
+  ['Protocol flexibility', 'Custom weekdays, every-other-day, phases and titration.'],
+  ['Rotation and inventory', 'Body-map rotation and doses-remaining per vial.'],
+  ['Insight', 'Level curves, check-ins, bloodwork and photos.'],
+  ['Price', 'What the free tier really includes and what a year costs.'],
+  ['Platforms', 'iPhone, Android and whether they have parity.'],
+];
+const list = [
+  { name: SITE.name, site: SITE.url, platforms: SITE.platforms.join(', '), pricing: `Free; ${SITE.pricing.pro.name} $${SITE.pricing.pro.yearly}/yr`, best: 'Best overall for multi-compound protocols', summary: `Covers peptides, GLP-1s and TRT with a calculator that saves to the vial, phase-based protocols, rotation map, level curves, bloodwork and an AI assistant across ${SITE.compoundCount}+ compounds. The free tier includes a complete protocol.` },
+  ...COMPETITORS.map((c) => ({ name: c.name.split(' (')[0], site: `https://${c.site}`, platforms: c.platforms, pricing: c.pricing, best: c.focus, summary: `${c.strengths.slice(0, 2).join('. ')}. ${c.gaps[0]}.` })),
+];
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: title,
+  itemListOrder: 'https://schema.org/ItemListOrderDescending',
+  numberOfItems: list.length,
+  itemListElement: list.map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: l.name, url: l.site })),
+};
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: published,
+  dateModified: published,
+  author: { '@type': 'Person', name: SITE.founder.name, url: abs('/about') },
+  publisher: { '@id': `${SITE.url}/#organization` },
+  mainEntityOfPage: abs('/best-peptide-tracker-apps'),
+  image: abs(SITE.ogImage),
+};
+const faq = [
+  { q: 'What is the best free peptide tracker app?', a: `${SITE.name} offers the most complete free tier: full compound library, calculator, one protocol with reminders, inventory and rotation. Shotsy is free but GLP-1 only; Regimen is free for a single compound.` },
+  { q: 'Which peptide tracker works on Android?', a: `${SITE.name}, PeptIQ, Shotsy, Regimen and Peptide Tracker have Android versions. PeptideKit is iOS only.` },
+  { q: 'Do I need an AI assistant in a peptide tracker?', a: 'It is useful for reconstitution questions and recreating a protocol from a description. It is not a substitute for a clinician, and the best apps say so.' },
+  { q: 'How did you choose these apps?', a: 'We compared public store listings and websites in September 2026 against the seven criteria above. We make Pepti, so read our verdicts with that in mind and try the free tiers yourself.' },
+];
+---
+<Base title={title} description={description} path="/best-peptide-tracker-apps" type="article" image="/og/best-peptide-tracker-apps.png" publishedTime={published} modifiedTime={published} jsonLd={[itemList, article]}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Best peptide tracker apps', href: '/best-peptide-tracker-apps' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>Best peptide tracker apps in 2026</h1>
+      <p class="meta">By {SITE.founder.name} · Updated {published} · We build {SITE.name}; comparisons use public listings and we link to every app.</p>
+      <p class="lead" style="margin-left:0">Seven trackers compared on the things that matter when you actually run a protocol: compound coverage, calculator, schedule flexibility, rotation, inventory, insight and price.</p>
+      <h2>How we compared them</h2>
+      <ul>{criteria.map(([k, v]) => <li><strong>{k}.</strong> {v}</li>)}</ul>
+    </div>
+  </section>
+  <section class="alt">
+    <div class="wrap">
+      <h2 style="margin-top:0">Quick comparison</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>App</th><th>Best for</th><th>Platforms</th><th>Pricing</th></tr></thead>
+        <tbody>{list.map((l, i) => <tr><td>{i + 1}</td><td><strong>{l.name}</strong></td><td>{l.best}</td><td>{l.platforms}</td><td>{l.pricing}</td></tr>)}</tbody>
+      </table></div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap prose">
+      {list.map((l, i) => (
+        <div>
+          <h2 id={l.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}>{i + 1}. {l.name}</h2>
+          <p><strong>{l.best}.</strong> {l.summary}</p>
+          <p class="meta">{l.platforms} · {l.pricing} · {i === 0 ? <a href="/features">Features</a> : <a href={`/compare/${SITE.name.toLowerCase()}-vs-${COMPETITORS[i - 1].slug}`}>{SITE.name} vs {l.name}</a>}</p>
+        </div>
+      ))}
+      <h2>Verdict</h2>
+      <p>If you only take one GLP-1, Shotsy or Regimen’s free tier will do. If you run research peptides, stacks, phases or TRT alongside a GLP-1, you want a tracker built for vials and schedules, and that is where {SITE.name} is strongest. Try the free plan and keep whichever you still open on day 30.</p>
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta />
+</Base>

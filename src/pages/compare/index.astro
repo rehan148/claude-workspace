@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Cta from '../../components/Cta.astro';
+import { SITE } from '../../config/site';
+import { COMPETITORS } from '../../data/competitors';
+const title = `Compare ${SITE.name} With Other Peptide Tracker Apps`;
+const description = `Side-by-side comparisons of ${SITE.name} against PeptIQ, Shotsy, Regimen, Peptide Tracker, PeptideKit and more: features, pricing, platforms and who each app suits.`;
+---
+<Base title={title} description={description} path="/compare">
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap">
+      <h1>Compare peptide tracker apps</h1>
+      <p class="lead" style="margin-left:0">Honest, feature-by-feature comparisons based on each app’s public listing. Or read the <a href="/best-peptide-tracker-apps">full roundup</a>.</p>
+      <h2>All comparisons</h2>
+      <div class="grid">
+        {COMPETITORS.map((c) => (
+          <a class="card" href={`/compare/${SITE.name.toLowerCase()}-vs-${c.slug}`} style="text-decoration:none">
+            <h3>{SITE.name} vs {c.name.split(' (')[0]}</h3>
+            <p>{c.focus}. {c.platforms}.</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Cta />
+</Base>

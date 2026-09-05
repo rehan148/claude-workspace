@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Calculator from '../../components/Calculator.astro';
+import Faq from '../../components/Faq.astro';
+import Cta from '../../components/Cta.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import { SITE, abs } from '../../config/site';
+import { PEPTIDES, reconstitute } from '../../data/peptides';
+export function getStaticPaths() { return PEPTIDES.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props;
+const path = `/peptide-calculator/${p.slug}`;
+const doseLabel = p.doseMcg >= 1000 ? `${p.doseMcg / 1000} mg` : `${p.doseMcg} mcg`;
+const title = `${p.name} Dosage Calculator: Units & Reconstitution`;
+const description = `Free ${p.name} calculator: turn a ${p.vialMg} mg vial and ${p.bacWaterMl} mL of water into mg/mL, mL and U-100 syringe units for a ${doseLabel} dose, plus doses per vial.`;
+const waters = [1, 2, 3];
+const doses = Array.from(new Set([p.doseMcg / 2, p.doseMcg, p.doseMcg * 2])).filter((d) => d >= 1);
+const faq = [
+  { q: `How much bacteriostatic water for a ${p.vialMg} mg ${p.name} vial?`, a: `${p.bacWaterMl} mL is a common choice, giving ${reconstitute(p.vialMg, p.bacWaterMl, p.doseMcg).concentrationMgPerMl} mg/mL. A ${doseLabel} dose is then ${reconstitute(p.vialMg, p.bacWaterMl, p.doseMcg).units.toFixed(1)} units on a U-100 syringe.` },
+  { q: `How many doses are in a ${p.vialMg} mg vial of ${p.name}?`, a: `At ${doseLabel} per dose, ${reconstitute(p.vialMg, p.bacWaterMl, p.doseMcg).dosesPerVial} doses. Change the dose above to see other options.` },
+  { q: `What is the typical ${p.name} dose?`, a: `Commonly cited protocols use ${p.doseRangeText}, ${p.frequency.toLowerCase()}. This is reference information, not a recommendation.` },
+  ...p.faq.slice(0, 2),
+];
+const tool = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: `${p.name} Reconstitution Calculator`,
+  url: abs(path),
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Any (web)',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@id': `${SITE.url}/#organization` },
+};
+---
+<Base title={title} description={description} path={path} image={`/og/calc-${p.slug}.png`} jsonLd={[tool]}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Peptide calculator', href: '/peptide-calculator' }, { name: p.name, href: path }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap">
+      <span class="pill">{p.category}</span>
+      <h1>{p.name} dosage calculator</h1>
+      <p class="lead" style="margin-left:0">Pre-filled with a typical {p.vialMg} mg vial, {p.bacWaterMl} mL of bacteriostatic water and a {doseLabel} dose. Edit any field.</p>
+      <Calculator vialMg={p.vialMg} bacWaterMl={p.bacWaterMl} doseMcg={p.doseMcg} compoundSlug={p.slug} />
+    </div>
+  </section>
+  <section class="alt">
+    <div class="wrap">
+      <h2 style="margin-top:0">{p.name} reconstitution chart ({p.vialMg} mg vial)</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Water</th><th>Concentration</th>{doses.map((d) => <th>{d >= 1000 ? `${d / 1000} mg` : `${d} mcg`} dose</th>)}</tr></thead>
+        <tbody>{waters.map((w) => (
+          <tr><td>{w} mL</td><td>{(p.vialMg / w).toFixed(2)} mg/mL</td>{doses.map((d) => <td><strong>{reconstitute(p.vialMg, w, d).units.toFixed(1)} units</strong> · {reconstitute(p.vialMg, w, d).dosesPerVial} doses</td>)}</tr>
+        ))}</tbody>
+      </table></div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap prose">
+      <h2 style="margin-top:0">{p.name} dosing reference</h2>
+      <ul>
+        <li><strong>Typical range:</strong> {p.doseRangeText}</li>
+        <li><strong>Frequency:</strong> {p.frequency}</li>
+        <li><strong>Route:</strong> {p.route}</li>
+        <li><strong>Half-life:</strong> {p.halfLifeText}</li>
+        <li><strong>Cycle:</strong> {p.cycleText}</li>
+        <li><strong>Storage:</strong> {p.storage}</li>
+      </ul>
+      <p>{p.summary}</p>
+      <p>Track this compound with reminders, inventory and site rotation: <a href={`/track/${p.slug}`}>{p.name} tracker</a>.</p>
+      <Disclaimer />
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta heading={`Track ${p.name} in ${SITE.name}`} text="Save this calculation to a protocol and let the app count doses, remind you and rotate sites." />
+</Base>

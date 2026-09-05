@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import Cta from '../../components/Cta.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE, abs } from '../../config/site';
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((g) => ({ params: { slug: g.id }, props: { g, all: guides } }));
+}
+const { g, all } = Astro.props;
+const { Content, headings } = await render(g);
+const path = `/guides/${g.id}`;
+const published = g.data.publishedAt.toISOString().slice(0, 10);
+const modified = (g.data.updatedAt ?? g.data.publishedAt).toISOString().slice(0, 10);
+const related = g.data.related.map((id) => all.find((x) => x.id === id)).filter(Boolean);
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${abs(path)}#article`,
+  headline: g.data.title,
+  description: g.data.description,
+  keywords: g.data.keywords.join(', '),
+  datePublished: published,
+  dateModified: modified,
+  author: { '@type': 'Person', name: SITE.founder.name, url: abs('/about') },
+  publisher: { '@id': `${SITE.url}/#organization` },
+  mainEntityOfPage: abs(path),
+  image: abs(SITE.ogImage),
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+};
+---
+<Base title={g.data.title} description={g.data.description} path={path} type="article" image={`/og/guide-${g.id}.png`} publishedTime={published} modifiedTime={modified} jsonLd={[article]}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides' }, { name: g.data.title, href: path }]} /></div>
+  <article>
+    <section class="hero" style="padding-top:32px;text-align:left">
+      <div class="wrap prose">
+        <h1>{g.data.title}</h1>
+        <p class="meta">By <a href="/about">{SITE.founder.name}</a> · Published {published}{modified !== published && ` · Updated ${modified}`}</p>
+        <p class="lead" style="margin-left:0">{g.data.description}</p>
+        {headings.filter((h) => h.depth === 2).length > 2 && (
+          <nav aria-label="On this page" class="card" style="padding:14px 18px">
+            <strong>On this page</strong>
+            <ol style="margin:6px 0 0;padding-left:1.2em">{headings.filter((h) => h.depth === 2).map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </nav>
+        )}
+      </div>
+    </section>
+    <section style="padding-top:0">
+      <div class="wrap prose">
+        <Content />
+        <Disclaimer />
+      </div>
+    </section>
+  </article>
+  {g.data.faq.length > 0 && <Faq items={g.data.faq} />}
+  {related.length > 0 && (
+    <section>
+      <div class="wrap">
+        <h2 style="margin-top:0">Related guides</h2>
+        <div class="grid">{related.map((r) => r && <a class="card" href={`/guides/${r.id}`} style="text-decoration:none"><h3 style="font-size:1.05rem">{r.data.title}</h3><p>{r.data.description}</p></a>)}</div>
+      </div>
+    </section>
+  )}
+  <Cta />
+</Base>

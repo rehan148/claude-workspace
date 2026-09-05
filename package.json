@@ -1,0 +1,20 @@
+{
+  "name": "getpepti-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SEO-optimized marketing site for getpepti.app (Pepti peptide tracker)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "seo:check": "node scripts/seo-check.mjs"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.1",
+    "sharp": "^0.35.4"
+  }
+}

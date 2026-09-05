@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import StoreButtons from '../../components/StoreButtons.astro';
+import Faq from '../../components/Faq.astro';
+import Cta from '../../components/Cta.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AppSchema from '../../components/AppSchema.astro';
+import { SITE } from '../../config/site';
+import { PEPTIDES, reconstitute } from '../../data/peptides';
+export function getStaticPaths() { return PEPTIDES.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props;
+const path = `/track/${p.slug}`;
+const brand = p.brandNames?.length ? ` (${p.brandNames.join(', ')})` : '';
+const title = `${p.name} Tracker App: Doses, Schedule & Units`;
+const description = `Track ${p.name}${brand}: reminders, reconstitution calculator, vial inventory, site rotation and half-life curves. Free ${SITE.name} app for iPhone and Android.`;
+const r = reconstitute(p.vialMg, p.bacWaterMl, p.doseMcg);
+const doseLabel = p.doseMcg >= 1000 ? `${p.doseMcg / 1000} mg` : `${p.doseMcg} mcg`;
+const related = PEPTIDES.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 4);
+const faq = [
+  ...p.faq,
+  { q: `Is ${SITE.name} free for tracking ${p.name}?`, a: `Yes. The free plan includes ${p.name} in the compound library, one active protocol with reminders, the calculator, vial inventory and site rotation.` },
+  { q: `Can I stack ${p.name} with other compounds?`, a: `Yes. Add any compound to the same protocol; each keeps its own schedule, inventory and level curve.` },
+];
+---
+<Base title={title} description={description} path={path} image={`/og/track-${p.slug}.png`}>
+  <AppSchema name={`${SITE.name}: ${p.name} Tracker`} description={description} url={`${SITE.url}${path}`} featureList={p.whyTrack} />
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Compounds', href: '/track' }, { name: p.name, href: path }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap two">
+      <div>
+        <span class="pill">{p.category}</span>
+        <h1>{p.name} tracker</h1>
+        <p class="lead" style="margin-left:0">{p.summary}</p>
+        <StoreButtons center={false} />
+        {p.aliases.length > 0 && <p class="meta" style="margin-top:12px">Also known as: {p.aliases.join(', ')}{brand}</p>}
+      </div>
+      <div class="phone" aria-hidden="true">{p.name}<br/>{doseLabel} · {p.frequency}<br/>= {r.units.toFixed(1)} units</div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <h2 style="margin-top:0">Why {p.name} needs a tracker</h2>
+      <div class="grid">{p.whyTrack.map((w) => <div class="card"><p style="color:var(--fg)">{w}</p></div>)}</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 style="margin-top:0">{p.name} at a glance</h2>
+      <div class="table-wrap"><table>
+        <tbody>
+          <tr><th>Typical dose</th><td>{p.doseRangeText}</td></tr>
+          <tr><th>Frequency</th><td>{p.frequency}</td></tr>
+          <tr><th>Route</th><td>{p.route}</td></tr>
+          <tr><th>Half-life</th><td>{p.halfLifeText}</td></tr>
+          <tr><th>Cycle</th><td>{p.cycleText}</td></tr>
+          <tr><th>Storage</th><td>{p.storage}</td></tr>
+          <tr><th>Example reconstitution</th><td>{p.vialMg} mg vial + {p.bacWaterMl} mL water = {r.concentrationMgPerMl} mg/mL → {doseLabel} dose = <strong>{r.units.toFixed(1)} units</strong>, {r.dosesPerVial} doses per vial. <a href={`/peptide-calculator/${p.slug}`}>Open the {p.name} calculator</a></td></tr>
+        </tbody>
+      </table></div>
+      <Disclaimer />
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap prose">
+      <h2 style="margin-top:0">How to track {p.name} in {SITE.name}</h2>
+      <ol>
+        <li><strong>Add {p.name}</strong> from the library. Half-life, route and typical vial sizes are pre-filled.</li>
+        <li><strong>Enter your vial</strong> ({p.vialMg} mg is common) and the water you add. Units per dose are calculated and saved.</li>
+        <li><strong>Set the schedule:</strong> {p.frequency.toLowerCase()}. Add phases if your protocol changes over time.</li>
+        <li><strong>Log each dose</strong> with one tap. Inventory, rotation map and level curve update automatically.</li>
+        <li><strong>Review</strong> weight, check-ins, side effects and labs against the dose history.</li>
+      </ol>
+      <p>Related reading: <a href="/guides/how-to-track-your-peptide-protocol">How to track a peptide protocol</a> · <a href="/guides/peptide-half-life-explained">Half-life explained</a> · <a href="/guides/injection-site-rotation">Injection site rotation</a></p>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section>
+      <div class="wrap">
+        <h2 style="margin-top:0">Often tracked with {p.name}</h2>
+        <div class="grid">{related.map((x) => <a class="card" href={`/track/${x.slug}`} style="text-decoration:none"><h3>{x.name} tracker</h3><p>{x.frequency}</p></a>)}</div>
+      </div>
+    </section>
+  )}
+
+  <Faq items={faq} heading={`${p.name} tracking FAQ`} />
+  <Cta heading={`Track ${p.name} free with ${SITE.name}`} />
+</Base>

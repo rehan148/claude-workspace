@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../config/site';
+const title = 'Terms of Service';
+const description = `Terms of use for the ${SITE.name} peptide tracker app and website, including subscription terms and the medical disclaimer.`;
+const updated = '2026-09-05';
+---
+<Base title={title} description={description} path="/terms" modifiedTime={updated}>
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms' }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>Terms of service</h1>
+      <p class="meta">Last updated {updated}</p>
+      <h2>1. The service</h2>
+      <p>{SITE.name} is a personal organisation and tracking tool. It does not provide medical advice, diagnosis or treatment, and does not sell or supply any compound.</p>
+      <h2>2. Medical disclaimer</h2>
+      <p>Compound information, dosing ranges and calculator outputs are provided for educational and organisational purposes only. Many peptides are research compounds not approved for human use. You are responsible for verifying every calculation and for consulting a licensed healthcare provider before acting on any information.</p>
+      <h2>3. Subscriptions</h2>
+      <p>{SITE.pricing.pro.name} is billed through the App Store or Google Play at the price shown at purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the period. Refunds are handled by Apple or Google under their policies.</p>
+      <h2>4. Acceptable use</h2>
+      <p>Do not use the service to sell compounds, to give medical advice to others, or to upload content you do not have rights to.</p>
+      <h2>5. Liability</h2>
+      <p>To the maximum extent permitted by law, {SITE.legalName} is not liable for any loss arising from reliance on the app or this website.</p>
+      <h2>6. Contact</h2>
+      <p><a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a></p>
+    </div>
+  </section>
+</Base>

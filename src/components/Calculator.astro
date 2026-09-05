@@ -1,0 +1,58 @@
+---
+/** Interactive reconstitution calculator. Vanilla JS, no framework, ~1 KB. */
+import { PEPTIDES } from '../data/peptides';
+const { vialMg = 5, bacWaterMl = 2, doseMcg = 250, compoundSlug = '' } = Astro.props;
+---
+<form class="calc" id="calc" aria-labelledby="calc-h" novalidate>
+  <h2 id="calc-h" style="margin-top:0;font-size:1.3rem">Peptide reconstitution calculator</h2>
+  <div class="row">
+    <div>
+      <label for="c-preset">Compound preset</label>
+      <select id="c-preset">
+        <option value="">Custom</option>
+        {PEPTIDES.map((p) => <option value={p.slug} data-mg={p.vialMg} data-ml={p.bacWaterMl} data-dose={p.doseMcg} selected={p.slug === compoundSlug}>{p.name}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="c-mg">Vial strength (mg)</label>
+      <input id="c-mg" type="number" inputmode="decimal" min="0.1" step="0.1" value={vialMg} />
+    </div>
+    <div>
+      <label for="c-ml">Bacteriostatic water (mL)</label>
+      <input id="c-ml" type="number" inputmode="decimal" min="0.1" step="0.1" value={bacWaterMl} />
+    </div>
+    <div>
+      <label for="c-dose">Dose (mcg)</label>
+      <input id="c-dose" type="number" inputmode="decimal" min="1" step="1" value={doseMcg} />
+    </div>
+  </div>
+  <div class="results" aria-live="polite">
+    <div><b id="r-units">–</b><span>units (U-100 syringe)</span></div>
+    <div><b id="r-ml">–</b><span>mL per dose</span></div>
+    <div><b id="r-conc">–</b><span>mg/mL concentration</span></div>
+    <div><b id="r-doses">–</b><span>doses per vial</span></div>
+  </div>
+  <p class="meta" style="margin:14px 0 0">Units are volume on a 100-unit-per-mL insulin syringe. Double-check every result before drawing a dose.</p>
+</form>
+<script>
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const mg = $('c-mg'), ml = $('c-ml'), dose = $('c-dose'), preset = $('c-preset') as unknown as HTMLSelectElement;
+  const fmt = (n: number, d = 2) => (Number.isFinite(n) ? (Math.round(n * 10 ** d) / 10 ** d).toString() : '–');
+  function calc() {
+    const vMg = parseFloat(mg.value), wMl = parseFloat(ml.value), dMcg = parseFloat(dose.value);
+    if (!(vMg > 0 && wMl > 0 && dMcg > 0)) return;
+    const conc = vMg / wMl;
+    const doseMl = dMcg / 1000 / conc;
+    $('r-units').textContent = fmt(doseMl * 100, 1);
+    $('r-ml').textContent = fmt(doseMl, 3);
+    $('r-conc').textContent = fmt(conc, 2);
+    $('r-doses').textContent = String(Math.floor((vMg * 1000) / dMcg));
+  }
+  [mg, ml, dose].forEach((el) => el.addEventListener('input', calc));
+  preset.addEventListener('change', () => {
+    const o = preset.selectedOptions[0];
+    if (o && o.value) { mg.value = o.dataset.mg || mg.value; ml.value = o.dataset.ml || ml.value; dose.value = o.dataset.dose || dose.value; }
+    calc();
+  });
+  calc();
+</script>

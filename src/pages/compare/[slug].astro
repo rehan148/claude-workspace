@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import Cta from '../../components/Cta.astro';
+import AppSchema from '../../components/AppSchema.astro';
+import { SITE } from '../../config/site';
+import { COMPETITORS } from '../../data/competitors';
+export function getStaticPaths() {
+  return COMPETITORS.map((c) => ({ params: { slug: `${SITE.name.toLowerCase()}-vs-${c.slug}` }, props: { c } }));
+}
+const { c } = Astro.props;
+const short = c.name.split(' (')[0];
+const path = `/compare/${SITE.name.toLowerCase()}-vs-${c.slug}`;
+const title = `${SITE.name} vs ${short}: Peptide Tracker Comparison (2026)`;
+const description = `${SITE.name} vs ${short} compared on compounds, calculator, rotation, inventory, level curves, AI, pricing and platforms, with a clear verdict.`;
+const rows: [string, string, string][] = [
+  ['Focus', 'Peptides, GLP-1s, TRT and any injectable', c.focus],
+  ['Platforms', SITE.platforms.join(', '), c.platforms],
+  ['Pricing', `Free; ${SITE.pricing.pro.name} $${SITE.pricing.pro.monthly}/mo or $${SITE.pricing.pro.yearly}/yr`, c.pricing],
+  ['Compound library', `${SITE.compoundCount}+ with half-lives and presets`, c.strengths.find((s) => /library|compound/i.test(s)) || 'See listing'],
+  ['Reconstitution calculator', 'Yes, saved to protocol', c.gaps.some((g) => /calculator/i.test(g)) ? 'No' : 'Yes'],
+  ['Phase-based protocols', 'Yes', c.gaps.some((g) => /phase/i.test(g)) ? 'No' : 'Limited'],
+  ['AI assistant', 'Yes', c.gaps.some((g) => /AI/i.test(g)) ? 'No' : (c.strengths.some((s) => /AI/i.test(s)) ? 'Yes' : 'Limited')],
+  ['Bloodwork tracking', `Yes (${SITE.pricing.pro.name})`, c.strengths.some((s) => /blood|health/i.test(s)) ? 'Yes' : 'Limited'],
+];
+const faq = [
+  { q: `Is ${SITE.name} cheaper than ${short}?`, a: `${SITE.name} is free for a full protocol; ${SITE.pricing.pro.name} is $${SITE.pricing.pro.yearly} per year. ${short}: ${c.pricing}.` },
+  { q: `Can I switch from ${short} to ${SITE.name}?`, a: `Yes. Export your dose history as CSV from ${short} if it supports it, then import it in ${SITE.name} Settings → Data → Import. Or recreate your protocol in about a minute with the AI assistant.` },
+  { q: `Which should I pick?`, a: c.verdict },
+];
+---
+<Base title={title} description={description} path={path} image={`/og/compare-${c.slug}.png`}>
+  <AppSchema />
+  <div class="wrap"><Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: `${SITE.name} vs ${short}`, href: path }]} /></div>
+  <section class="hero" style="padding-top:32px;text-align:left">
+    <div class="wrap prose">
+      <h1>{SITE.name} vs {short}</h1>
+      <p class="lead" style="margin-left:0">{c.verdict}</p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="table-wrap"><table>
+        <thead><tr><th></th><th>{SITE.name}</th><th>{short}</th></tr></thead>
+        <tbody>{rows.map(([k, a, b]) => <tr><th>{k}</th><td>{a}</td><td>{b}</td></tr>)}</tbody>
+      </table></div>
+      <p class="meta" style="margin-top:10px">Based on public store listings and websites, September 2026. Tell us if something is out of date: <a href="/contact">contact</a>.</p>
+    </div>
+  </section>
+  <section class="alt">
+    <div class="wrap grid">
+      <div class="card"><h3>Where {short} is strong</h3><ul style="padding-left:1.1em;margin:0;color:var(--muted)">{c.strengths.map((s) => <li>{s}</li>)}</ul></div>
+      <div class="card"><h3>Where {short} falls short</h3><ul style="padding-left:1.1em;margin:0;color:var(--muted)">{c.gaps.map((s) => <li>{s}</li>)}</ul></div>
+      <div class="card"><h3>What {SITE.name} adds</h3><ul style="padding-left:1.1em;margin:0;color:var(--muted)"><li>Phase-based protocols and stacks</li><li>Calculator results saved to the vial</li><li>Level curves from half-life</li><li>AI assistant over {SITE.compoundCount}+ compounds</li><li>Free tier that covers a full protocol</li></ul></div>
+    </div>
+  </section>
+  <Faq items={faq} />
+  <Cta />
+</Base>
