@@ -1,7 +1,7 @@
 # Instagram Reels Analysis Report
 
 **Requested:** Fetch, scrape, and deeply analyse five Instagram reels, then produce a combined report.
-**Prepared:** 2026-09-10
+**Prepared:** 2026-09-10 (updated same day after second attempt round)
 **Status:** ⚠️ **Content analysis could not be completed.** Instagram is blocked by this environment's outbound network policy. See [Section 2](#2-what-was-attempted) for the full attempt log and [Section 5](#5-how-to-complete-this-analysis) for how to unblock it.
 
 Everything below is either (a) verifiable from the attempt log, or (b) derived mathematically from the URLs themselves. Nothing about the *content* of the reels (video, caption, creator, audio, engagement) has been observed, and none of it is guessed here.
@@ -32,6 +32,18 @@ Every route to the content was tried and every one was denied at the network-pol
 | WebFetch (server-side fetch) | `www.instagram.com/reel/<code>/` ×5 | `EGRESS_BLOCKED: Access to www.instagram.com is blocked by the network egress proxy` |
 | WebFetch, public embed endpoint | `www.instagram.com/p/<code>/embed/captioned/` ×5 | `EGRESS_BLOCKED` (same host) |
 | Web search on each shortcode | `"<code>" instagram reel` ×5 | No indexed result for any of the five codes. Only generic Instagram Reels pages and downloader-tool sites were returned. |
+
+**Second round (requested: captions, OG metadata, public profiles, corroborating coverage instead of transcripts):**
+
+| Method | Target | Result |
+|--------|--------|--------|
+| WebFetch and `curl` re-check | `www.instagram.com/reel/Dc4AUnCs95O/` | Still `EGRESS_BLOCKED` / CONNECT 403 |
+| Instagram oEmbed API (returns caption + author for public posts) | `api.instagram.com/oembed/?url=…` | CONNECT 403 (host blocked) |
+| Facebook Graph oEmbed | `graph.facebook.com/v19.0/instagram_oembed?url=…` | CONNECT 403 (host blocked) |
+| Search-engine snippet of the reel page, restricted to `instagram.com` | each shortcode ×5 | No hit. Results were unrelated profiles matching letter fragments of the code. |
+| Search for any page linking the reel URL | all five URLs OR'd together | No hit. Only generic Instagram Reels articles and product listings. |
+
+Public profiles and corroborating coverage could not be attempted: the creator handles are only visible on the (blocked) reel pages, and no topic or keyword is known to search on. There is no source from which a caption or `og:description` could be extracted.
 
 The proxy status endpoint recorded each failure as `connect_rejected — gateway answered 403 to CONNECT (policy denial or upstream failure)` for `www.instagram.com:443`. The environment's own guidance is explicit that organisation policy denials must be reported, not retried or routed around, so third-party mirror/scraper sites were **not** used.
 
